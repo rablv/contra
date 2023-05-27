@@ -3,10 +3,27 @@ export default class Weapon{
     #currentGunStrategy;
     #bulletFactory;
 
+    #count = 0;
+    #limit = 6;
+
+    #isFire = false;
+    #bulletContext;
+
     constructor(bulletFactory){
         this.#bulletFactory = bulletFactory;
 
         this.#currentGunStrategy = this.#defaultGunStrategy;
+    }
+
+    update(bulletContext){
+        if(this.#isFire == false){
+            return
+        }
+
+        if(this.#count % this.#limit == 0){
+            this.#currentGunStrategy(bulletContext);
+        }
+        this.#count ++;
     }
 
     setWeapon(type){
@@ -20,15 +37,22 @@ export default class Weapon{
         }
     }
 
-    fire(bulletContext){
-        this.#currentGunStrategy(bulletContext);
+    startFire(){
+        this.#isFire = true;
+    }
+
+    stopFire(){
+        this.#isFire = false;
+        this.#count = 0;
     }
 
     #defaultGunStrategy(bulletContext){
+        this.#limit = 10;
         this.#bulletFactory.createBullet(bulletContext);
     }
 
     #spreadGunStrategy(bulletContext){
+        this.#limit = 40;
         let angleShift = -20;
         for(let i=0; i<5; i++){
             const localBulletContext = {
@@ -38,7 +62,7 @@ export default class Weapon{
                 type: bulletContext.type,
             }
 
-            this.#bulletFactory.createBullet(localBulletContext);
+            this.#bulletFactory.createSpreadGunBullet(localBulletContext);
             angleShift += 10;
         }
     }

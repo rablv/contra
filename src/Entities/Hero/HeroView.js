@@ -1,4 +1,4 @@
-import { Container, Graphics } from "../../../lib/pixi.mjs";
+import { AnimatedSprite, Container, Graphics, Sprite } from "../../../lib/pixi.mjs";
 
 export default class HeroView extends Container {
 
@@ -31,9 +31,13 @@ export default class HeroView extends Container {
     }
 
     #rootNode;
+    #assets;
 
-    constructor() {
+    constructor(assets) {
         super();
+
+        this.#assets = assets;
+
         this.#createNodeStructure();
 
         this.#rootNode.pivot.x = 10;
@@ -46,6 +50,7 @@ export default class HeroView extends Container {
         this.#stm.states.stay = this.#getStayImage();
         this.#stm.states.stayUp = this.#getStayUpImage();
         this.#stm.states.run = this.#getRunImage();
+        this.#stm.states.runShoot = this.#getRunShootImage();
         this.#stm.states.runUp = this.#getRunUpImage();
         this.#stm.states.runDown = this.#getRunDownImage();
         this.#stm.states.lay = this.#getLayImage();
@@ -79,7 +84,7 @@ export default class HeroView extends Container {
 
     showStay() {
         this.#toState("stay");
-        this.#setBulletPointShift(65, 30);
+        this.#setBulletPointShift(50, 29);
 
         this.#hitBox.width = 20;
         this.#hitBox.height = 90;
@@ -89,7 +94,7 @@ export default class HeroView extends Container {
 
     showStayUp() {
         this.#toState("stayUp");
-        this.#setBulletPointShift(-2, -40);
+        this.#setBulletPointShift(18, -30);
 
         this.#hitBox.width = 20;
         this.#hitBox.height = 90;
@@ -107,9 +112,19 @@ export default class HeroView extends Container {
         this.#hitBox.shiftY = 0;
     }
 
+    showRunShoot() {
+        this.#toState("runShoot");
+        this.#setBulletPointShift(50, 29);
+
+        this.#hitBox.width = 20;
+        this.#hitBox.height = 90;
+        this.#hitBox.shiftX = 0;
+        this.#hitBox.shiftY = 0;
+    }
+
     showRunUp() {
         this.#toState("runUp");
-        this.#setBulletPointShift(40, -20);
+        this.#setBulletPointShift(40, 0);
 
         this.#hitBox.width = 20;
         this.#hitBox.height = 90;
@@ -119,7 +134,7 @@ export default class HeroView extends Container {
 
     showRunDown() {
         this.#toState("runDown");
-        this.#setBulletPointShift(20, 55);
+        this.#setBulletPointShift(47, 50);
 
         this.#hitBox.width = 20;
         this.#hitBox.height = 90;
@@ -129,7 +144,7 @@ export default class HeroView extends Container {
 
     showLay() {
         this.#toState("lay");
-        this.#setBulletPointShift(65, 70);
+        this.#setBulletPointShift(50, 70);
 
         this.#hitBox.width = 90;
         this.#hitBox.height = 20;
@@ -187,79 +202,92 @@ export default class HeroView extends Container {
     }
 
     #getStayImage() {
-        const view = new Graphics();
-        view.lineStyle(2, 0xffff00);
-        view.drawRect(0, 0, 20, 90);
-        view.drawRect(0, 30, 70, 5);
+        const view = new Sprite(this.#assets.getTexture("stay0000"));
         return view;
     }
 
     #getStayUpImage() {
-        const view = new Graphics();
-        view.lineStyle(2, 0xffff00);
-        view.drawRect(0, 0, 20, 90);
-        view.drawRect(8, -40, 5, 40);
+        const view = new Sprite(this.#assets.getTexture("stayup0000"));
+        view.x += 2;
+        view.y -= 31;
         return view;
     }
 
     #getRunImage() {
-        const view = new Graphics();
-        view.lineStyle(2, 0xffff00);
-        view.drawRect(0, 0, 20, 90);
-        view.drawRect(0, 30, 70, 5);
-        view.transform.skew.x = -0.1;
+        const view = new AnimatedSprite(this.#assets.getAnimationTextures("run"));
+        view.animationSpeed = 1 / 10;
+        view.play();
+        view.y -= 3;
         return view;
     }
 
+    #getRunShootImage() {
+
+        const container = new Container();
+
+        const upperPart = new Sprite(this.#assets.getTexture("stay0000"));
+        upperPart.x = 8;
+        upperPart.y = 2;
+
+        const upperPartMask = new Graphics();
+        upperPartMask.beginFill(0xffffff);
+        upperPartMask.drawRect(0,0,100,45);
+
+        upperPart.mask = upperPartMask;
+
+        const bottomPart = new AnimatedSprite(this.#assets.getAnimationTextures("run"));
+        bottomPart.animationSpeed = 1 / 10;
+        bottomPart.play();
+        bottomPart.y -= 3;
+
+        const bottomPartMask = new Graphics();
+        bottomPartMask.beginFill(0xffffff);
+        bottomPartMask.drawRect(0,45,100,45);
+
+        bottomPart.mask = bottomPartMask;
+
+        container.addChild(upperPart);
+        container.addChild(bottomPart);
+        container.addChild(upperPartMask);
+        container.addChild(bottomPartMask);
+
+        return container;
+    }
+
     #getRunUpImage() {
-        const view = new Graphics();
-        view.lineStyle(2, 0xffff00);
-        view.drawRect(0, 0, 20, 90);
-        view.lineTo(0, 30);
-        view.lineTo(40, -20);
-        view.lineTo(45, -15);
-        view.lineTo(0, 40);
-        view.transform.skew.x = -0.1;
+        const view = new AnimatedSprite(this.#assets.getAnimationTextures("runup"));
+        view.animationSpeed = 1 / 10;
+        view.play();
+        view.y -= 3;
         return view;
     }
 
     #getRunDownImage() {
-        const view = new Graphics();
-        view.lineStyle(2, 0xffff00);
-        view.drawRect(0, 0, 20, 90);
-        view.lineTo(0, 20);
-        view.lineTo(40, 60);
-        view.lineTo(35, 65);
-        view.lineTo(0, 30);
-        view.transform.skew.x = -0.1;
+        const view = new AnimatedSprite(this.#assets.getAnimationTextures("rundown"));
+        view.animationSpeed = 1 / 10;
+        view.play();
+        view.y -= 3;
         return view;
     }
 
     #getLayImage() {
-        const view = new Graphics();
-        view.lineStyle(2, 0xffff00);
-        view.drawRect(0, 0, 90, 20);
-        view.drawRect(90, 0, 40, 5);
-        view.x -= 45;
-        view.y += 70;
+        const view = new Sprite(this.#assets.getTexture("lay0000"));
+        view.x -= 25;
+        view.y += 50;
         return view;
     }
 
     #getJumpImage() {
-        const view = new Graphics();
-        view.lineStyle(2, 0xffff00);
-        view.drawRect(0, 0, 40, 40);
+        const view = new AnimatedSprite(this.#assets.getAnimationTextures("jump"));
+        view.animationSpeed = 1 / 10;
+        view.play();
+        view.y -= 3;
         view.x -= 10;
-        view.y += 25;
         return view;
     }
 
     #getFallImage() {
-        const view = new Graphics();
-        view.lineStyle(2, 0xffff00);
-        view.drawRect(0, 0, 20, 90);
-        view.drawRect(10, 20, 5, 60);
-        view.transform.skew.x = -0.1;
+        const view = new Sprite(this.#assets.getTexture("run0003"));
         return view;
     }
 }

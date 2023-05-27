@@ -1,4 +1,4 @@
-import { Container, Graphics } from "../../../../lib/pixi.mjs";
+import { AnimatedSprite, Container, Graphics, Sprite } from "../../../../lib/pixi.mjs";
 
 export default class RunnerView extends Container {
 
@@ -18,9 +18,12 @@ export default class RunnerView extends Container {
     }
 
     #rootNode;
+    #assets;
 
-    constructor() {
+    constructor(assets) {
         super();
+        this.#assets = assets;
+
         this.#createNodeStructure();
 
         this.#rootNode.pivot.x = 10;
@@ -91,28 +94,20 @@ export default class RunnerView extends Container {
     }
 
     #getRunImage() {
-        const view = new Graphics();
-        view.lineStyle(2, 0xff0000);
-        view.drawRect(0, 0, 20, 90);
-        view.transform.skew.x = -0.1;
+        const view = new AnimatedSprite(this.#assets.getAnimationTextures("runnerrun"));
+        view.animationSpeed = 1 / 10;
+        view.play();
+        view.y += 2;
         return view;
     }
 
     #getJumpImage() {
-        const view = new Graphics();
-        view.lineStyle(2, 0xff0000);
-        view.drawRect(0, 0, 40, 40);
-        view.x -= 10;
-        view.y += 25;
+        const view = new Sprite(this.#assets.getTexture("runnerjump0000"));
         return view;
     }
 
     #getFallImage() {
-        const view = new Graphics();
-        view.lineStyle(2, 0xff0000);
-        view.drawRect(0, 0, 20, 90);
-        view.drawRect(10, 20, 5, 60);
-        view.transform.skew.x = -0.1;
+        const view = new Sprite(this.#assets.getTexture("runnerjump0000"));
         return view;
     }
 }

@@ -14,12 +14,6 @@ export default class BulletView extends Container{
 
         this.#collisionBox.width = 5;
         this.#collisionBox.height = 5;
-
-        const view = new Graphics();
-        view.lineStyle(1, 0xffff00);
-        view.drawRect(0,0,5,5);
-
-        this.addChild(view);
     }
 
     get collisionBox(){

@@ -19,6 +19,7 @@ export default class SceneFactory{
     }
 
     createScene(){
+        this.#createDecoration();
         this.#createPlatforms();
         this.#createGround();
         this.#createWater();
@@ -28,6 +29,12 @@ export default class SceneFactory{
         this.#createPowerups();
 
         this.#createInteractive();
+    }
+
+    #createDecoration(){
+        for(let i = 22; i < 52; i++){
+            this.#platformsFactory.createJungle(this.#blockSize * i, 0);
+        }
     }
 
     #createPlatforms(){
@@ -71,8 +78,10 @@ export default class SceneFactory{
     }
 
     #createBossWall(){
-        let xIndexes = [52];
+        let xIndexes = [52]; //52
         this.#create(xIndexes, 170, this.#platformsFactory.createBossWall);
+
+        this.#enemyFactory.createBoss(this.#blockSize * 52, 440);
     }
 
     #createInteractive(){

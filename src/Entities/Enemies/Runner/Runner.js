@@ -101,7 +101,15 @@ export default class Runner extends Entity{
     }
 
     damage(){
-        this.dead();
+        this.#movement.x = 0;
+        this.#GRAVITY_FORCE = 0;
+        this.#velocityX = 0;
+        this.#velocityY = 0;
+
+        const deadAnimation = this._view.showAndGetDeadAnimation();
+        deadAnimation.onComplete = () => {
+            this.dead();
+        }
     }
 
     stay(platformY) {

@@ -1,6 +1,6 @@
 import Entity from "../../Entity.js";
 
-export default class Tourelle extends Entity{
+export default class BossGun extends Entity{
 
     #target;
     #bulletFactory;
@@ -30,10 +30,7 @@ export default class Tourelle extends Entity{
             return;
         }
 
-        let angle = Math.atan2(this.#target.y - this.y, this.#target.x - this.x);
-        this._view.gunRotation = angle;
-
-        this.#fire(angle);
+        this.#fire();
     }
 
     damage(){
@@ -48,20 +45,20 @@ export default class Tourelle extends Entity{
         }
     }
 
-    #fire(angle){
+    #fire(){
         this.#timeCounter++;
 
-        if(this.#timeCounter < 50){
+        if(this.#timeCounter < 50 && Math.random() > 0.01){
             return;
         }
 
         const bulletContext = {};
         bulletContext.x = this.x;
         bulletContext.y = this.y;
-        bulletContext.angle = angle / Math.PI * 180;
+        bulletContext.angle = 180;
         bulletContext.type = "enemyBullet";
 
-        this.#bulletFactory.createBullet(bulletContext);
+        this.#bulletFactory.createBossBullet(bulletContext);
 
         this.#timeCounter = 0;
     }

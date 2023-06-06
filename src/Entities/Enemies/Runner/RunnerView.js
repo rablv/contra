@@ -76,6 +76,21 @@ export default class RunnerView extends Container {
         }
     }
 
+    showAndGetDeadAnimation(){
+        this.#rootNode.visible = false;
+        this.#collisionBox.width = 0;
+        this.#collisionBox.height = 0;
+
+        const explosion = new AnimatedSprite(this.#assets.getAnimationTextures("explosion"));
+        explosion.animationSpeed = 1/5;
+        explosion.x = -explosion.width/2;
+        explosion.loop = false;
+        explosion.play();
+        this.addChild(explosion);
+
+        return explosion;
+    }
+
     #toState(key) {
         if (this.#stm.currentState == key) {
             return;

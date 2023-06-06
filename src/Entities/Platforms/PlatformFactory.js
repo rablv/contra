@@ -52,13 +52,16 @@ export default class PlatformFactory{
 
     createWater(x, y){
         const skin = new Graphics();
-        skin.lineStyle(1, 0x0000ff);
-        skin.beginFill(0x0000ff);
+        skin.beginFill(0x0072ec);
         skin.drawRect(0, -this.#platformHeight, this.#platformWidth, this.#platformHeight);
         skin.lineTo(this.#platformWidth, this.#platformHeight);
 
+        const waterTop = new Sprite(this.#assets.getTexture("water0000"));
+        waterTop.y = -this.#platformHeight;
+
         const view = new PlatformView(this.#platformWidth, this.#platformHeight);
         view.addChild(skin);
+        view.addChild(waterTop);
 
         const platform = new Platform(view);
         platform.x = x;
@@ -91,12 +94,31 @@ export default class PlatformFactory{
         const view = new PlatformView(this.#platformWidth, this.#platformHeight);
         view.addChild(skin);
 
-        const platform = new BridgePlatform(view);
+        const platform = new BridgePlatform(view, this.#assets);
         platform.x = x;
         platform.y = y;
         this.#worldContainer.background.addChild(view);
 
         return platform;
+    }
+
+    createJungle(x, y){
+        const jungleTop = new Sprite(this.#assets.getTexture("jungletop0000"));
+        for(let i = 1; i <= 5; i++){
+            const jungleBottom = this.#createJungleBottom(jungleTop);
+            jungleBottom.y = jungleTop.height * i - 2 * i;
+        }
+        jungleTop.x = x;
+        jungleTop.y = y;
+
+        this.#worldContainer.background.addChild(jungleTop);
+    }
+
+    #createJungleBottom(jungleTop){
+        const jungleBottom = new Sprite(this.#assets.getTexture("junglebottom0000"));
+        jungleTop.addChild(jungleBottom);
+
+        return jungleBottom;
     }
 
     #getGroundPlatform(){
